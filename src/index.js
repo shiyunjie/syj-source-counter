@@ -46,8 +46,6 @@ const interate = async (patternInput, optionsInput, ignoreInput, extensionInput,
   ignoreFiles = ignoreInput || [];
   const options = optionsInput || { nodir: true };
 
-  console.log('options:', options);
-
   const files = await promise(
     pattern,
     options,
@@ -56,7 +54,6 @@ const interate = async (patternInput, optionsInput, ignoreInput, extensionInput,
   if (files.length > 0) {
     for (let value in files) {
       const info = await todo(files[value]);
-      console.log('info:', info);
       if (info) {
         result.push(info);
       }
@@ -93,11 +90,9 @@ const getPackageRequire = async (file) => {
 
   const code = await fs.readFile(file, 'utf8');
   const constast = acorn.parse(code, {
-    sourceType: 'module',
-    ecmaVersion: 6,
+    sourceType: 'module', ecmaVersion: 6,
     locations: true,
   });
-
   constast.body.forEach((node) => {
 
     if (node.type === 'ImportDeclaration') {
