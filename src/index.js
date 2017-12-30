@@ -1,7 +1,7 @@
 /**
  * Created by shiyunjie on 17/11/21.
  */
-import 'babel-polyfill';  // 比较重，支持es6  es7 api
+import 'babel-polyfill';
 
 import promise from 'glob-promise';
 import fs from 'fs-extra';
