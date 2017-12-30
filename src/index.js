@@ -62,7 +62,7 @@ const interate = async (patternInput, optionsInput, ignoreInput, extensionInput,
       }
     }
   }
-  return result
+  return result;
 }
 
 /**
@@ -74,7 +74,7 @@ const getFileRows = async (file) => {
   const baseName = path.basename(file);
 
   if (ignoreFiles.includes(baseName)) {
-    return null
+    return null;
   }
   const fileJson = await fs.readFile(file, 'utf8');
   const rows = fileJson.trim().split('\n').length;
@@ -110,12 +110,12 @@ const getPackageRequire = async (file) => {
             num: 1,
           })
         } else {
-          packages[index].num++
+          packages[index].num++;
         }
       }
     }
   })
-  return packages
+  return packages;
 }
 
 export default {
