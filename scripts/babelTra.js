@@ -1,12 +1,11 @@
 /**
  * Created by shiyunjie on 17/11/30.
  */
-import "babel-polyfill";
 
 import fs from 'fs-extra';
 import * as babel from 'babel-core';
 import glob from "glob";
-const success = 1
+const success = 1;
 
 const main = async () => {
   const removeResult = await remove('app');
@@ -58,13 +57,7 @@ const travel = (src, dest, globPath) => {
 }
 
 const babelTransform = (fileName) => {
-  babel.transformFile(fileName, {
-    babelrc: false,
-    presets: ['env'],
-    plugins: [
-      "transform-runtime"
-    ]
-  }, (error, result) => {
+  babel.transformFile(fileName, (error, result) => {
     if(error){
       throw error
     }

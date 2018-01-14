@@ -6,28 +6,43 @@ import 'babel-polyfill';
 import promise from 'glob-promise';
 import fs from 'fs-extra';
 import path from 'path';
+import execa from 'execa';
 const acorn = require('acorn');
 
 let ignoreFiles = [];
 let packages = [];
 
-const countFileRows = async (patternInput, optionsInput, ignoreInput, extensionInput) => {
+const countFileRows = async ({
+                               patternInput,
+                               optionsInput,
+                               ignoreInput,
+                               extensionInput,
+                             }) => {
   return await interate(
-    patternInput,
-    optionsInput,
-    ignoreInput,
-    extensionInput,
+    {
+      patternInput,
+      optionsInput,
+      ignoreInput,
+      extensionInput,
+    },
     getFileRows);
 }
 
-const countPackageRequire = async (patternInput, optionsInput, ignoreInput, extensionInput) => {
+const countPackageRequire = async ({
+                                     patternInput,
+                                     optionsInput,
+                                     ignoreInput,
+                                     extensionInput,
+                                   }) => {
   packages = [];
   await interate(
-    patternInput,
-    optionsInput,
-    ignoreInput,
-    extensionInput,
-    getPackageRequire);
+    {
+      patternInput,
+      optionsInput,
+      ignoreInput,
+      extensionInput,
+    },
+    getRequirePackageNumber);
   return packages;
 }
 
@@ -39,12 +54,24 @@ const countPackageRequire = async (patternInput, optionsInput, ignoreInput, exte
  * @param todo
  * @returns {Promise.<Array>}
  */
-const interate = async (patternInput, optionsInput, ignoreInput, extensionInput, todo) => {
+const interate = async ({
+                          patternInput,
+                          optionsInput,
+                          ignoreInput,
+                          extensionInput,
+                        } = {}, todo) => {
   const extension = extensionInput || '';
   const pattern = patternInput ?
     `${patternInput}/**/*${extension}` : `**/*${extension}`;
   ignoreFiles = ignoreInput || [];
-  const options = optionsInput || { nodir: true };
+  let options = { nodir: true };
+  if (optionsInput) {
+    options = { ...options, ...optionsInput };
+  }
+  if (ignoreInput) {
+    options = { ...options, ignore: ignoreInput };
+  }
+
 
   const files = await promise(
     pattern,
@@ -69,24 +96,18 @@ const interate = async (patternInput, optionsInput, ignoreInput, extensionInput,
  */
 const getFileRows = async (file) => {
   const baseName = path.basename(file);
-
-  if (ignoreFiles.includes(baseName)) {
-    return null;
-  }
-  const fileJson = await fs.readFile(file, 'utf8');
-  const rows = fileJson.trim().split('\n').length;
-  console.log(`${baseName}代码行数:`, rows);
+  const info = await execa.shell(`wc -l ${file}`);
+  console.log(`${baseName}代码行数:`, info);
   return {
-    path: file,
-    rows: rows,
+    rows: info.stdout.trim(),
   }
 }
 
 /**
- * 统计文件引用了多少包
+ * 统计目录中文件引用包次数
  * @param file
  */
-const getPackageRequire = async (file) => {
+const getRequirePackageNumber = async (file) => {
 
   const code = await fs.readFile(file, 'utf8');
   const constast = acorn.parse(code, {

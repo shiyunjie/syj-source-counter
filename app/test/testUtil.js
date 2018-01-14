@@ -7,7 +7,7 @@ var util = require('../index');
 
 function main() {
   //const result = await util.countFileRows('app', { dot: false }, ['update.ts']);
-  util.default.countFileRows('app').then(function (res) {
+  util.default.countFileRows({ patternInput: 'app' }).then(function (res) {
     console.log(res);
   });
   //util.default.countPackageRequire('app').then(

@@ -2,7 +2,6 @@
  * Created by shiyunjie on 17/12/1.
  */
 
-import "babel-polyfill";
 import fs from 'fs-extra';
 import semver from 'semver';
 import packageJS from "../package.json";   // 获取package.json

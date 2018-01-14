@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -26,24 +30,37 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _execa = require('execa');
+
+var _execa2 = _interopRequireDefault(_execa);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Created by shiyunjie on 17/11/21.
- */
-var acorn = require('acorn'); // 比较重，支持es6  es7 api
+var acorn = require('acorn'); /**
+                               * Created by shiyunjie on 17/11/21.
+                               */
+
 
 var ignoreFiles = [];
 var packages = [];
 
 var countFileRows = function () {
-  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(patternInput, optionsInput, ignoreInput, extensionInput) {
+  var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(_ref2) {
+    var patternInput = _ref2.patternInput,
+        optionsInput = _ref2.optionsInput,
+        ignoreInput = _ref2.ignoreInput,
+        extensionInput = _ref2.extensionInput;
     return _regenerator2.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return interate(patternInput, optionsInput, ignoreInput, extensionInput, getFileRows);
+            return interate({
+              patternInput: patternInput,
+              optionsInput: optionsInput,
+              ignoreInput: ignoreInput,
+              extensionInput: extensionInput
+            }, getFileRows);
 
           case 2:
             return _context.abrupt('return', _context.sent);
@@ -56,20 +73,29 @@ var countFileRows = function () {
     }, _callee, undefined);
   }));
 
-  return function countFileRows(_x, _x2, _x3, _x4) {
+  return function countFileRows(_x) {
     return _ref.apply(this, arguments);
   };
 }();
 
 var countPackageRequire = function () {
-  var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(patternInput, optionsInput, ignoreInput, extensionInput) {
+  var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(_ref4) {
+    var patternInput = _ref4.patternInput,
+        optionsInput = _ref4.optionsInput,
+        ignoreInput = _ref4.ignoreInput,
+        extensionInput = _ref4.extensionInput;
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             packages = [];
             _context2.next = 3;
-            return interate(patternInput, optionsInput, ignoreInput, extensionInput, getPackageRequire);
+            return interate({
+              patternInput: patternInput,
+              optionsInput: optionsInput,
+              ignoreInput: ignoreInput,
+              extensionInput: extensionInput
+            }, getRequirePackageNumber);
 
           case 3:
             return _context2.abrupt('return', packages);
@@ -82,8 +108,8 @@ var countPackageRequire = function () {
     }, _callee2, undefined);
   }));
 
-  return function countPackageRequire(_x5, _x6, _x7, _x8) {
-    return _ref2.apply(this, arguments);
+  return function countPackageRequire(_x2) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -95,7 +121,14 @@ var countPackageRequire = function () {
  * @returns {Promise.<Array>}
  */
 var interate = function () {
-  var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(patternInput, optionsInput, ignoreInput, extensionInput, todo) {
+  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
+    var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        patternInput = _ref6.patternInput,
+        optionsInput = _ref6.optionsInput,
+        ignoreInput = _ref6.ignoreInput,
+        extensionInput = _ref6.extensionInput;
+
+    var todo = arguments[1];
     var extension, pattern, options, files, result, value, info;
     return _regenerator2.default.wrap(function _callee3$(_context3) {
       while (1) {
@@ -105,15 +138,19 @@ var interate = function () {
             pattern = patternInput ? patternInput + '/**/*' + extension : '**/*' + extension;
 
             ignoreFiles = ignoreInput || [];
-            options = optionsInput || { nodir: true };
+            options = { nodir: true };
 
+            if (optionsInput) {
+              options = (0, _extends3.default)({}, options, optionsInput);
+            }
+            if (ignoreInput) {
+              options = (0, _extends3.default)({}, options, { ignore: ignoreInput });
+            }
 
-            console.log('options:', options);
-
-            _context3.next = 7;
+            _context3.next = 8;
             return (0, _globPromise2.default)(pattern, options);
 
-          case 7:
+          case 8:
             files = _context3.sent;
             result = [];
 
@@ -124,24 +161,23 @@ var interate = function () {
 
             _context3.t0 = _regenerator2.default.keys(files);
 
-          case 11:
+          case 12:
             if ((_context3.t1 = _context3.t0()).done) {
               _context3.next = 20;
               break;
             }
 
             value = _context3.t1.value;
-            _context3.next = 15;
+            _context3.next = 16;
             return todo(files[value]);
 
-          case 15:
+          case 16:
             info = _context3.sent;
 
-            console.log('info:', info);
             if (info) {
               result.push(info);
             }
-            _context3.next = 11;
+            _context3.next = 12;
             break;
 
           case 20:
@@ -155,8 +191,8 @@ var interate = function () {
     }, _callee3, undefined);
   }));
 
-  return function interate(_x9, _x10, _x11, _x12, _x13) {
-    return _ref3.apply(this, arguments);
+  return function interate() {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -166,36 +202,27 @@ var interate = function () {
  * @returns {Promise.<{path: *, rows: Number}>}
  */
 var getFileRows = function () {
-  var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(file) {
-    var baseName, fileJson, rows;
+  var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(file) {
+    var baseName, info;
     return _regenerator2.default.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
             baseName = _path2.default.basename(file);
-
-            if (!ignoreFiles.includes(baseName)) {
-              _context4.next = 3;
-              break;
-            }
-
-            return _context4.abrupt('return', null);
+            _context4.next = 3;
+            return _execa2.default.shell('wc -l ' + file);
 
           case 3:
-            _context4.next = 5;
-            return _fsExtra2.default.readFile(file, 'utf8');
+            info = _context4.sent;
 
-          case 5:
-            fileJson = _context4.sent;
-            rows = fileJson.trim().split('\n').length;
-
-            console.log(baseName + '\u4EE3\u7801\u884C\u6570:', rows);
+            //const fileJson = await fs.readFile(file, 'utf8');
+            //const rows = fileJson.trim().split('\n').length;
+            console.log(baseName + '\u4EE3\u7801\u884C\u6570:', info);
             return _context4.abrupt('return', {
-              path: file,
-              rows: rows
+              rows: info.stdout.trim()
             });
 
-          case 9:
+          case 6:
           case 'end':
             return _context4.stop();
         }
@@ -203,17 +230,17 @@ var getFileRows = function () {
     }, _callee4, undefined);
   }));
 
-  return function getFileRows(_x14) {
-    return _ref4.apply(this, arguments);
+  return function getFileRows(_x4) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
 /**
- * 统计文件引用了多少包
+ * 统计目录中文件引用包次数
  * @param file
  */
-var getPackageRequire = function () {
-  var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(file) {
+var getRequirePackageNumber = function () {
+  var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(file) {
     var code, constast;
     return _regenerator2.default.wrap(function _callee5$(_context5) {
       while (1) {
@@ -225,11 +252,9 @@ var getPackageRequire = function () {
           case 2:
             code = _context5.sent;
             constast = acorn.parse(code, {
-              sourceType: 'module',
-              ecmaVersion: 6,
+              sourceType: 'module', ecmaVersion: 6,
               locations: true
             });
-
 
             constast.body.forEach(function (node) {
 
@@ -260,8 +285,8 @@ var getPackageRequire = function () {
     }, _callee5, undefined);
   }));
 
-  return function getPackageRequire(_x15) {
-    return _ref5.apply(this, arguments);
+  return function getRequirePackageNumber(_x5) {
+    return _ref8.apply(this, arguments);
   };
 }();
 
